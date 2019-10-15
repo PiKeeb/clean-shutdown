@@ -21,10 +21,9 @@ DISCLAIMER
 
 # default values
 daemon_active=1
-trigger_pin=4
-led_pin=off
-poweroff_pin=off
-hold_time=1
+trigger_pin=26
+poweroff_pin=26
+hold_time=0
 shutdown_delay=0
 polling_rate=1
 
@@ -38,16 +37,6 @@ if grep -q "^[[:space:]]*disable_cleanshutd=1" /boot/config.txt; then
 elif [ "$daemon_active" == 0 ]; then
     echo "cleanshutd is disabled in /etc/cleanshutd.conf"
     exit 1
-fi
-
-if [ "$shutdown_delay" != 0 ]; then
-    blink_time=$shutdown_delay
-else
-    blink_time=0.1
-fi
-
-if [ "$trigger_pin" != "$led_pin" ]; then
-    raspi-gpio set $led_pin op dh
 fi
 
 raspi-gpio set $trigger_pin ip pu
@@ -98,14 +87,6 @@ while true; do
             raspi-gpio set $trigger_pin ip pu
             daemon="on"
             break
-        fi
-        if [ "$led_pin" != "off" ]; then
-            raspi-gpio set $led_pin op dl
-            sleep 0.1
-            raspi-gpio set $led_pin op dh
-            sleep $blink_time
-        else
-            sleep $polling_rate
         fi
     done
 done

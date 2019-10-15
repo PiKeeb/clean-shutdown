@@ -40,7 +40,7 @@ pkgdeplist=() # list of dependencies
 defaultconf="/etc/cleanshutd.conf"
 
 FORCE=""
-PRODUCT=""
+PRODUCT="PiKeeb"
 USERPIN=""
 
 ASK_TO_REBOOT=false
@@ -185,35 +185,6 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
-# parse arguments
-
-for i in "$@"; do
-    case $i in
-        -y)
-            FORCE="-y"
-            shift
-        ;;
-        onoffshim)
-            PRODUCT=$i
-            shift
-        ;;
-        zerolipo)
-            PRODUCT=$i
-            shift
-        ;;
-        phatbeat)
-            PRODUCT=$i
-            shift
-        ;;
-        custom)
-            PRODUCT=$i
-            shift
-        ;;
-        *)
-            USERPIN=$i
-        ;;
-    esac
-done
 
 echo -e "Installing dependencies..."
 
@@ -241,38 +212,13 @@ sudo systemctl daemon-reload
 sudo systemctl enable cleanshutd
 sudo cp ./daemon/etc/cleanshutd.conf /etc/
 
-if [ "$PRODUCT" == "onoffshim" ]; then
+if [ "$PRODUCT" == "PiKeeb" ]; then
     echo -e "\nInstalling GPIO Power Off support...\n"
     sudo cp ./daemon/lib/systemd/system-shutdown/gpio-poweroff /lib/systemd/system-shutdown/gpio-poweroff
-    echo -e "\nApplying default settings for OnOff SHIM..."
-    config_set trigger_pin 17
-    config_set poweroff_pin 4
-    config_set led_pin 17
-    config_set hold_time 1
-    config_set shutdown_delay 0
-    config_set polling_rate 1
-elif [ "$PRODUCT" == "zerolipo" ]; then
-    echo -e "\nApplying default settings for Zero LiPo..."
-    config_set trigger_pin 4
-    config_set poweroff_pin off
-    config_set led_pin off
+    echo -e "\nApplying default settings for PiKeeb..."
+    config_set trigger_pin 26
+    config_set poweroff_pin 26
     config_set hold_time 0
-    config_set shutdown_delay 5
-    config_set polling_rate 1
-elif [ "$PRODUCT" == "phatbeat" ]; then
-    echo -e "\nApplying default settings for pHAT BEAT..."
-    config_set trigger_pin 12
-    config_set poweroff_pin off
-    config_set led_pin off
-    config_set hold_time 1
-    config_set shutdown_delay 0
-    config_set polling_rate 1
-elif [ "$PRODUCT" == "default" ]; then
-    echo -e "\nApplying default settings..."
-    config_set trigger_pin 4
-    config_set poweroff_pin off
-    config_set led_pin off
-    config_set hold_time 1
     config_set shutdown_delay 0
     config_set polling_rate 1
 else
