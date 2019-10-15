@@ -41,10 +41,6 @@ This is a pretty hacky way to passify the daemon without needing to delve into t
 
 Normally you'll set this up at install time and won't need to change it, but... as we do, next week you might buy a nice shiny (Pimoroni) HAT or pHAT and find that the pin you had your clean shutdown trigger wired to is required by your new friend. Just move the trigger button to another pin and reboot! The unit used for this parameter is the bcm number for the pin (4 or above recommended, 0-3 have particularities that make them slightly less straightforward to use, though the daemon will happily monitor them for you, so as long as you know what you're doing go right ahead).
 
-### `led_pin`
-
-This parameter determines a pin can be pulled low to blink a status LED, first showing that shutdown has been armed, and finally blinking three times to show that final power off is imminent. So feel free to wire a LED onto a GPIO pin and set the parameter accordingly if you like.
-
 ### `poweroff_pin`
 
 For products that support it (eg: OnOff SHIM), the `poweroff_pin` determines which pin will be pulled low right at the end of your Pi's shutdown process. If supported, this will cause power to your Pi to be cut completely.

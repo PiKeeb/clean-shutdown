@@ -221,26 +221,6 @@ if [ "$PRODUCT" == "PiKeeb" ]; then
     config_set hold_time 0
     config_set shutdown_delay 0
     config_set polling_rate 1
-else
-    if [ -z "$PRODUCT" ]; then
-        if [ -n "$USERPIN" ]; then
-            config_set trigger_pin "$USERPIN"
-        else
-            echo
-            read -r -p "What BCM pin would you like to use as trigger for the shutdown? " bcmnumber < /dev/tty
-            if [ $bcmnumber -ge 4 &>/dev/null ] && [ $bcmnumber -le 27 &>/dev/null ]; then
-                config_set trigger_pin $bcmnumber
-            else
-                warning "\ninput not recognised as a valid BCM pin number!"
-                echo "edit /etc/cleanshutd.conf manually to specify the correct pin"
-            fi
-            read -r -p "What BCM pin would you like to pull low on shutdown? ('off' for none) " bcmnumber < /dev/tty
-            if [ $bcmnumber -ge 4 &>/dev/null ] && [ $bcmnumber -le 27 &>/dev/null ]; then
-                sudo cp ./daemon/lib/systemd/system-shutdown/gpio-poweroff /lib/systemd/system-shutdown/gpio-poweroff
-                config_set poweroff_pin $bcmnumber
-            fi
-        fi
-    fi
 fi
 
 success "\nAll done!\n"
