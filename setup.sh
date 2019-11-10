@@ -27,7 +27,7 @@ spacereq=20 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
 debuguser="none" # optional test git user to use in debug mode
 debugpoint="none" # optional git repo branch or tag to checkout
-forcesudo="no" # whether the script requires to be ran with root privileges
+forcesudo="yes" # whether the script requires to be ran with root privileges
 promptreboot="yes" # whether the script should always prompt user to reboot
 mininstall="no" # whether the script enforces minimum install routine
 customcmd="yes" # whether to execute commands specified before exit
@@ -40,7 +40,7 @@ pkgdeplist=() # list of dependencies
 defaultconf="/etc/cleanshutd.conf"
 
 FORCE=""
-PRODUCT="PiKeeb"
+PRODUCT=""
 USERPIN=""
 
 ASK_TO_REBOOT=false
@@ -212,6 +212,13 @@ sudo systemctl daemon-reload
 sudo systemctl enable cleanshutd
 sudo cp ./daemon/etc/cleanshutd.conf /etc/
 
+read -p "Are you installing this script on PiKeeb? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    PRODUCT="PiKeeb"
+fi
+
 if [ "$PRODUCT" == "PiKeeb" ]; then
     echo -e "\nInstalling GPIO Power Off support...\n"
     sudo cp ./daemon/lib/systemd/system-shutdown/gpio-poweroff /lib/systemd/system-shutdown/gpio-poweroff
@@ -221,6 +228,26 @@ if [ "$PRODUCT" == "PiKeeb" ]; then
     config_set hold_time 0
     config_set shutdown_delay 0
     config_set polling_rate 1
+else
+    if [ -z "$PRODUCT" ]; then
+        if [ -n "$USERPIN" ]; then
+            config_set trigger_pin "$USERPIN"
+        else
+            echo
+            read -r -p "What BCM pin would you like to use as trigger for the shutdown? " bcmnumber < /dev/tty
+            if [ $bcmnumber -ge 4 &>/dev/null ] && [ $bcmnumber -le 27 &>/dev/null ]; then
+                config_set trigger_pin $bcmnumber
+            else
+              warning "\ninput not recognised as a valid BCM pin number!"
+              echo "edit /etc/cleanshutd.conf manually to specify the correct pin"
+            fi
+            read -r -p "What BCM pin would you like to pull low on shutdown? ('off' for none) " bcmnumber < /dev/tty
+            if [ $bcmnumber -ge 4 &>/dev/null ] && [ $bcmnumber -le 27 &>/dev/null ]; then
+                sudo cp ./daemon/lib/systemd/system-shutdown/gpio-poweroff /lib/systemd/system-shutdown/gpio-poweroff
+                config_set poweroff_pin $bcmnumber
+            fi
+        fi
+    fi
 fi
 
 success "\nAll done!\n"
