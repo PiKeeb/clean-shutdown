@@ -35,7 +35,7 @@ sudo service cleanshutd restart
 
 ### `daemon_active`
 
-This is a pretty hacky way to passify the daemon without needing to delve into the details of [systemd](https://www.freedesktop.org/wiki/Software/systemd/). Set to `0` to deactivate the daemon (technically the daemon will be started at boot time but it will do absolutely nothing). Set to `1` to reactivate.
+This is a pretty hacky way to pacify the daemon without needing to delve into the details of [systemd](https://www.freedesktop.org/wiki/Software/systemd/). Set to `0` to deactivate the daemon (technically the daemon will be started at boot time but it will do absolutely nothing). Set to `1` to reactivate.
 
 ### `trigger_pin`
 

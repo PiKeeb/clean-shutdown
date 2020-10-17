@@ -15,7 +15,7 @@ This script is licensed under the terms of the MIT license.
 Unless otherwise noted, code reproduced herein
 was written for this script.
 
-- The Pimoroni Crew -
+- ILWrites -
 
 DISCLAIMER
 
@@ -234,18 +234,22 @@ else
             config_set trigger_pin "$USERPIN"
         else
             echo
-            read -r -p "What BCM pin would you like to use as trigger for the shutdown? " bcmnumber < /dev/tty
+            read -r -p "\nWhat BCM pin would you like to use as a trigger for the shutdown? " bcmnumber < /dev/tty
             if [ $bcmnumber -ge 4 &>/dev/null ] && [ $bcmnumber -le 27 &>/dev/null ]; then
                 config_set trigger_pin $bcmnumber
             else
-              warning "\ninput not recognised as a valid BCM pin number!"
-              echo "edit /etc/cleanshutd.conf manually to specify the correct pin"
+              warning "\nInput not recognised as a valid BCM pin number!"
+              echo "\nEdit /etc/cleanshutd.conf manually to specify the correct pin"
             fi
-            read -r -p "What BCM pin would you like to pull low on shutdown? ('off' for none) " bcmnumber < /dev/tty
+            read -r -p "\nWhat BCM pin would you like to pull low on shutdown?" bcmnumber < /dev/tty
             if [ $bcmnumber -ge 4 &>/dev/null ] && [ $bcmnumber -le 27 &>/dev/null ]; then
                 sudo cp ./daemon/lib/systemd/system-shutdown/gpio-poweroff /lib/systemd/system-shutdown/gpio-poweroff
                 config_set poweroff_pin $bcmnumber
+            else
+                warning "\nInput not recognised as a valid BCM pin number!"
+                echo "\nEdit /etc/cleanshutd.conf manually to specify the correct pin"
             fi
+            echo "\nIf you wish to change any of the daemon parameters, please edit /etc/cleanshutd.conf manually."
         fi
     fi
 fi
